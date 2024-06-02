@@ -25,16 +25,18 @@ const FavoritesScreen = () => {
 
 	return (
 		<View style={defaultStyles.container}>
-			<ScrollView
-				style={{ paddingHorizontal: screenPadding.horizontal }}
-				contentInsetAdjustmentBehavior="automatic"
-			>
-				<TracksList
-					id={generateTracksListId('favorites', search)}
-					scrollEnabled={false}
-					tracks={filteredFavoritesTracks}
-				/>
-			</ScrollView>
+      <View style={defaultStyles.searchBarContainer}>
+        <ScrollView
+          style={{ paddingHorizontal: screenPadding.horizontal }}
+          contentInsetAdjustmentBehavior="automatic"
+        >
+          <TracksList
+            id={generateTracksListId('favorites', search)}
+            scrollEnabled={false}
+            tracks={filteredFavoritesTracks}
+          />
+        </ScrollView>
+      </View>
 		</View>
 	)
 }

@@ -30,18 +30,20 @@ const PlaylistsScreen = () => {
 
 	return (
 		<View style={defaultStyles.container}>
-			<ScrollView
-				contentInsetAdjustmentBehavior="automatic"
-				style={{
-					paddingHorizontal: screenPadding.horizontal,
-				}}
-			>
-				<PlaylistsList
-					scrollEnabled={false}
-					playlists={filteredPlaylists}
-					onPlaylistPress={handlePlaylistPress}
-				/>
-			</ScrollView>
+      <View style={defaultStyles.searchBarContainer}>
+        <ScrollView
+          contentInsetAdjustmentBehavior="automatic"
+          style={{
+            paddingHorizontal: screenPadding.horizontal,
+          }}
+        >
+          <PlaylistsList
+            scrollEnabled={false}
+            playlists={filteredPlaylists}
+            onPlaylistPress={handlePlaylistPress}
+          />
+        </ScrollView>
+      </View>
 		</View>
 	)
 }

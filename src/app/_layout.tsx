@@ -1,10 +1,12 @@
 import { playbackService } from '@/constants/playbackService'
 import { colors } from '@/constants/tokens'
+import { AuthContext, AuthContextProvider, useAuth } from '@/context/AuthContext'
 import { useLogTrackPlayerState } from '@/hooks/useLogTrackPlayerState'
 import { useSetupTrackPlayer } from '@/hooks/useSetupTrackPlayer'
-import { SplashScreen, Stack } from 'expo-router'
+import { Slot, SplashScreen, Stack, useRouter, useSegments } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
-import { useCallback } from 'react'
+import { useCallback, useEffect } from 'react'
+import { Text } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import TrackPlayer from 'react-native-track-player'
@@ -27,15 +29,16 @@ const App = () => {
 	return (
 		<SafeAreaProvider>
 			<GestureHandlerRootView style={{ flex: 1 }}>
-				<RootNavigation />
-
+        <AuthContextProvider>
+          <RootNavigation />
+        </AuthContextProvider>
 				<StatusBar style="auto" />
 			</GestureHandlerRootView>
 		</SafeAreaProvider>
 	)
 }
 
-const RootNavigation = () => {
+const MainNavigation = () => {
 	return (
 		<Stack>
 			<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -66,6 +69,32 @@ const RootNavigation = () => {
 			/>
 		</Stack>
 	)
+}
+
+type AuthProps = {
+  authScreen: string
+}
+
+const AuthNavigation = ({authScreen}: AuthProps) => {
+  const authScreenToUse = ['signup', 'login'].includes(authScreen) ? authScreen : 'login';
+  const router = useRouter()
+
+  useEffect(() => {
+    router.replace("/"+authScreenToUse)
+  })
+
+  return <Slot />
+}
+
+const RootNavigation = () => {
+  const {isAuthenticated} = useAuth()
+  const segments = useSegments()
+  const authScreen = segments[1]
+
+  return (
+    isAuthenticated ? <MainNavigation /> : <AuthNavigation authScreen={authScreen}/>
+  )
+
 }
 
 export default App

@@ -6,6 +6,10 @@ export const defaultStyles = StyleSheet.create({
 		flex: 1,
 		backgroundColor: colors.background,
 	},
+  searchBarContainer: {
+    backgroundColor: colors.background,
+    paddingTop: 55
+  },
 	text: {
 		fontSize: fontSize.base,
 		color: colors.text,

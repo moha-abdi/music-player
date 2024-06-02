@@ -25,16 +25,18 @@ const SongsScreen = () => {
 
 	return (
 		<View style={defaultStyles.container}>
-			<ScrollView
-				contentInsetAdjustmentBehavior="automatic"
-				style={{ paddingHorizontal: screenPadding.horizontal }}
-			>
-				<TracksList
-					id={generateTracksListId('songs', search)}
-					tracks={filteredTracks}
-					scrollEnabled={false}
-				/>
-			</ScrollView>
+      <View style={defaultStyles.searchBarContainer}>
+        <ScrollView
+          contentInsetAdjustmentBehavior="automatic"
+          style={{ paddingHorizontal: screenPadding.horizontal }}
+        >
+          <TracksList
+            id={generateTracksListId('songs', search)}
+            tracks={filteredTracks}
+            scrollEnabled={false}
+          />
+        </ScrollView>
+      </View>
 		</View>
 	)
 }
