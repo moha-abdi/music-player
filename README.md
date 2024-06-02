@@ -17,3 +17,4 @@ yarn install
 npx expo run:ios
 ```
 "# music-player" 
+"# music-player" 
