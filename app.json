@@ -46,8 +46,10 @@
         "origin": false
       },
       "eas": {
-        "projectId": "c818c673-6618-4c0e-9655-4903ff2fb22b"
+        "projectId_old": "c818c673-6618-4c0e-9655-4903ff2fb22b",
+        "projectId": "3be8cdb6-9a54-41d8-a001-880db49a046c"
       }
-    }
+    },
+    "owner": "moha-abdi"
   }
 }
