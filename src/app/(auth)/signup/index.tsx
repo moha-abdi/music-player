@@ -1,24 +1,37 @@
 // /app/(auth)/signup.tsx
 import { useRouter, Link } from 'expo-router';
-import { useState } from 'react';
-import { StyleSheet, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { LegacyRef, useRef, useState } from 'react';
+import { StyleSheet, ScrollView, Text, TextInput, TouchableOpacity, View, Alert } from 'react-native';
 import { defaultStyles } from '@/styles';
 import { colors, screenPadding } from '@/constants/tokens';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import Loading from '@/components/Loading';
+import { useAuth } from '@/context/AuthContext';
 
 const SignUpScreen = () => {
   const router = useRouter();
+  const [loading, setLoading] = useState(false)
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
+  const {register} = useAuth()
 
-  const handleSignUp = () => {
-    // Perform sign-up logic here
-    // If successful, navigate to the appropriate screen
+  const handleSignUp = async () => {
+    if(!email || !username || !password) {
+      Alert.alert('Sign Up', 'Please fill all the fields!')
+      return
+    }
+    setLoading(true)
+    let response = await register(email, username, password)
+    setLoading(false)
+
+    if (!response.success){
+      Alert.alert("Sign Up", response.message)
+      return
+    }
     console.log("Sign-up successful");
-    // You can handle sign-up logic and navigation here
-    // For example, navigate to the login screen after successful sign-up
-    router.replace('/login');
+    // no need to do the route.dismiss() anymore as we handled it in AuthContext :)
+    // router.dismiss();
   };
 
   return (
@@ -29,35 +42,55 @@ const SignUpScreen = () => {
         contentContainerStyle={styles.contentContainer}
       >
         <View style={styles.signUpContainer}>
-          <Text style={[defaultStyles.text, styles.headerText]}>Sign Up</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            placeholderTextColor={colors.textMuted}
-            value={email}
-            onChangeText={setEmail}
-            autoCapitalize="none"
-            keyboardType="email-address"
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Username"
-            placeholderTextColor={colors.textMuted}
-            value={username}
-            onChangeText={setUsername}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            placeholderTextColor={colors.textMuted}
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-          />
-          <TouchableOpacity onPress={handleSignUp} activeOpacity={0.8} style={styles.button}>
-            <MaterialCommunityIcons name="account-plus" size={24} color={colors.primary} />
-            <Text style={styles.buttonText}>Sign Up</Text>
-          </TouchableOpacity>
+          <Text style={styles.headerText}>Create Account</Text>
+          <View style={styles.inputContainer}>
+            <Ionicons name="mail-outline" size={22} color={colors.textMuted} style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              placeholder="Email"
+              placeholderTextColor={colors.textMuted}
+              value={email}
+              onChangeText={email => setEmail(email)}
+            />
+          </View>
+          <View style={styles.inputContainer}>
+            <Ionicons name="person-circle-outline" size={22} color={colors.textMuted} style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              placeholder="Username"
+              placeholderTextColor={colors.textMuted}
+              value={username}
+              onChangeText={username => setUsername(username)}
+            />
+          </View>
+          <View style={styles.inputContainer}>
+            <Ionicons name="lock-closed-outline" size={22} color={colors.textMuted} style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              placeholder="Password"
+              placeholderTextColor={colors.textMuted}
+              value={password}
+              onChangeText={password => setPassword(password)}
+              secureTextEntry
+            />
+          </View>
+          <View style={{ justifyContent: 'center', flexDirection: 'row', alignItems: 'center', alignSelf: 'center' }}>
+            {
+              loading ? (
+                <View style={styles.loadingContainer}>
+                  <Loading size={80} />
+                </View>
+              ) : (
+                <TouchableOpacity onPress={handleSignUp} onLayout={(event) => {
+                    const {height} = event.nativeEvent.layout
+                    console.log("DEBUG: Height-ka (Sign-up button) waxa weeyi: "+height)
+                  }} activeOpacity={0.8} style={styles.button}>
+                  <MaterialCommunityIcons name="account-plus" size={24} color={colors.primary} />
+                  <Text style={styles.buttonText}>Sign Up</Text>
+                </TouchableOpacity>
+              )
+            }
+          </View> 
           <View style={styles.loginLinkContainer}>
             <Text style={styles.loginLinkText}>Already have an account?</Text>
             <Link href="/login" style={styles.loginLink}>Login</Link>
@@ -80,21 +113,35 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headerText: {
+    color: colors.textMuted,
+    fontSize: 20,
+    fontFamily: 'Lato',
+    fontWeight: '600',
     textAlign: 'center',
     marginBottom: 24,
   },
   input: {
     ...defaultStyles.text,
-    width: '100%',
+    flex: 1,
     fontSize: 16,
-    borderWidth: 1,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.background,
+    borderWidth: 0.8,
     borderColor: colors.primary,
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 8,
     marginVertical: 8,
+    width: '100%',
+  },
+  inputIcon: {
+    marginRight: 8,
   },
   button: {
+    height: 50,
     padding: 12,
     backgroundColor: 'rgba(47, 47, 47, 0.5)',
     borderRadius: 8,
@@ -102,6 +149,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     columnGap: 8,
+    marginTop: 16,
+    width: '100%',
+  },
+  loadingContainer: {
+    height: 50,
+    backgroundColor: 'rgba(47, 47, 47, 0.5)',
+    borderRadius: 8,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    columnGap: 3,
     marginTop: 16,
     width: '100%',
   },
