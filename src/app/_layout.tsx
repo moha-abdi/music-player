@@ -78,10 +78,12 @@ type AuthProps = {
 const AuthNavigation = ({authScreen}: AuthProps) => {
   const authScreenToUse = ['signup', 'login'].includes(authScreen) ? authScreen : 'login';
   const router = useRouter()
-
-  useEffect(() => {
-    router.replace("/"+authScreenToUse)
-  })
+  const inAuthGroup = useSegments()[0]
+  //
+  // useEffect(() => {
+  //   if (!inAuthGroup) return
+  //   router.replace("/"+authScreenToUse)
+  // }, [])
 
   return <Slot />
 }
@@ -90,9 +92,10 @@ const RootNavigation = () => {
   const {isAuthenticated} = useAuth()
   const segments = useSegments()
   const authScreen = segments[1]
+  console.log(segments)
 
   return (
-    isAuthenticated ? <MainNavigation /> : <AuthNavigation authScreen={authScreen}/>
+    <Slot />
   )
 
 }
