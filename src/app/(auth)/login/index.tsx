@@ -78,7 +78,7 @@ const LoginScreen = () => {
           </View>
           <View style={{flexDirection: 'row'}}>
             <Text style={styles.signUpText}>Don't have an account? </Text>
-            <Pressable onPress={() => {router.push("/signup")}}> 
+            <Pressable onPress={() => {router.push("/signup")}}>
               <Text style={styles.signUpLink}>Sign Up</Text>
             </Pressable>
           </View>

@@ -42,7 +42,9 @@ const MainNavigation = () => {
 	return (
 		<Stack>
 			<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-
+      <Stack.Screen name="account" options={{ headerShown: false }} />
+      <Stack.Screen name="(auth)/login" options={{ headerShown: false }} />
+      <Stack.Screen name="(auth)/signup" options={{ headerShown: false }} />
 			<Stack.Screen
 				name="player"
 				options={{
@@ -71,22 +73,6 @@ const MainNavigation = () => {
 	)
 }
 
-type AuthProps = {
-  authScreen: string
-}
-
-const AuthNavigation = ({authScreen}: AuthProps) => {
-  const authScreenToUse = ['signup', 'login'].includes(authScreen) ? authScreen : 'login';
-  const router = useRouter()
-  const inAuthGroup = useSegments()[0]
-  //
-  // useEffect(() => {
-  //   if (!inAuthGroup) return
-  //   router.replace("/"+authScreenToUse)
-  // }, [])
-
-  return <Slot />
-}
 
 const RootNavigation = () => {
   const {isAuthenticated} = useAuth()
@@ -95,7 +81,7 @@ const RootNavigation = () => {
   console.log(segments)
 
   return (
-    <Slot />
+    <MainNavigation />
   )
 
 }

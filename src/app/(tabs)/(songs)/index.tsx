@@ -1,9 +1,10 @@
 import { TracksList } from '@/components/TracksList'
 import { screenPadding } from '@/constants/tokens'
+import { useAuth } from '@/context/AuthContext'
 import { trackTitleFilter } from '@/helpers/filter'
 import { generateTracksListId } from '@/helpers/miscellaneous'
 import { useNavigationSearch } from '@/hooks/useNavigationSearch'
-import { useTracks } from '@/store/library'
+import { useInitializeTracks, useTracks } from '@/store/library'
 import { defaultStyles } from '@/styles'
 import { useMemo } from 'react'
 import { ScrollView, View } from 'react-native'
@@ -15,13 +16,17 @@ const SongsScreen = () => {
 		},
 	})
 
-	const tracks = useTracks()
+	useInitializeTracks()
+  const tracks = useTracks()
+  const { isLoadingTracks } = useAuth()
 
 	const filteredTracks = useMemo(() => {
 		if (!search) return tracks
 
 		return tracks.filter(trackTitleFilter(search))
 	}, [search, tracks])
+
+  console.log("Type of tracks is: " + typeof tracks)
 
 	return (
 		<View style={defaultStyles.container}>
@@ -32,6 +37,7 @@ const SongsScreen = () => {
         >
           <TracksList
             id={generateTracksListId('songs', search)}
+            isLoadingTracks={isLoadingTracks}
             tracks={filteredTracks}
             scrollEnabled={false}
           />
