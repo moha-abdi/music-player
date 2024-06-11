@@ -9,5 +9,6 @@ export const formatSecondsToMinutes = (seconds: number) => {
 }
 
 export const generateTracksListId = (trackListName: string, search?: string) => {
+  console.log("The id generated is: " + `${trackListName}${`-${search}` || ''}`)
 	return `${trackListName}${`-${search}` || ''}`
 }
