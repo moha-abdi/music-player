@@ -1,3 +1,4 @@
+import { useAuth } from '@/context/AuthContext'
 import { useFavorites } from '@/store/library'
 import { useQueue } from '@/store/queue'
 import { MenuView } from '@react-native-menu/menu'
@@ -10,16 +11,20 @@ type TrackShortcutsMenuProps = PropsWithChildren<{ track: Track }>
 
 export const TrackShortcutsMenu = ({ track, children }: TrackShortcutsMenuProps) => {
 	const router = useRouter()
+  const { favorites } = useAuth()
 
-	const isFavorite = track.rating === 1
+	const isFavorite = (favorites as string[]).includes(track.url)
+  const { addTrackToFavorites, removeTrackFromFavorites } = useAuth()
 
 	const { toggleTrackFavorite } = useFavorites()
 	const { activeQueueId } = useQueue()
 
-	const handlePressAction = (id: string) => {
+	const handlePressAction = async (id: string) => {
 		match(id)
 			.with('add-to-favorites', async () => {
-				toggleTrackFavorite(track)
+        console.log("active q id is: " + activeQueueId)
+        toggleTrackFavorite(track)
+        await addTrackToFavorites(track.url)
 
 				// if the tracks is in the favorite queue, add it
 				if (activeQueueId?.startsWith('favorites')) {
@@ -27,10 +32,13 @@ export const TrackShortcutsMenu = ({ track, children }: TrackShortcutsMenuProps)
 				}
 			})
 			.with('remove-from-favorites', async () => {
-				toggleTrackFavorite(track)
+        toggleTrackFavorite(track)
+        await removeTrackFromFavorites(track.url)
+        console.log("active q id is: " + activeQueueId)
 
 				// if the track is in the favorites queue, we need to remove it
 				if (activeQueueId?.startsWith('favorites')) {
+          console.log("In")
 					const queue = await TrackPlayer.getQueue()
 
 					const trackToRemove = queue.findIndex((queueTrack) => queueTrack.url === track.url)

@@ -3,14 +3,17 @@ import { unknownTrackImageUri } from '@/constants/images'
 import { useQueue } from '@/store/queue'
 import { utilsStyles } from '@/styles'
 import { useRef } from 'react'
-import { FlatList, FlatListProps, Text, View } from 'react-native'
+import { StyleSheet, ActivityIndicator, FlatList, FlatListProps, Text, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import TrackPlayer, { Track } from 'react-native-track-player'
 import { QueueControls } from './QueueControls'
+import Loading from './Loading'
+import { colors, fontSize } from '@/constants/tokens'
 
 export type TracksListProps = Partial<FlatListProps<Track>> & {
 	id: string
 	tracks: Track[]
+  isLoadingTracks: boolean
 	hideQueueControls?: boolean
 }
 
@@ -21,6 +24,7 @@ const ItemDivider = () => (
 export const TracksList = ({
 	id,
 	tracks,
+  isLoadingTracks,
 	hideQueueControls = false,
 	...flatlistProps
 }: TracksListProps) => {
@@ -60,6 +64,17 @@ export const TracksList = ({
 		}
 	}
 
+  if (isLoadingTracks) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: 50, paddingTop: 128 }}>
+        <View style={styles.loadingContainer}>
+          <Loading size={150}/>
+        </View>
+        <Text style={styles.loadingContentText}>Fetching tracks...</Text>
+      </View>
+    );
+  }
+
 	return (
 		<FlatList
 			data={tracks}
@@ -88,3 +103,22 @@ export const TracksList = ({
 		/>
 	)
 }
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    height: 80,
+    borderRadius: 8,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    columnGap: 3,
+    marginTop: 16,
+    width: '100%',
+  },
+  loadingContentText: {
+    fontSize: fontSize.base,
+		color: colors.textMuted,
+		textAlign: 'center',
+	},
+
+})

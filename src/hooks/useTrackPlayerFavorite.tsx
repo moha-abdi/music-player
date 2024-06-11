@@ -1,3 +1,4 @@
+import { useAuth } from '@/context/AuthContext'
 import { useFavorites } from '@/store/library'
 import { useCallback } from 'react'
 import TrackPlayer, { useActiveTrack } from 'react-native-track-player'
@@ -5,9 +6,11 @@ import TrackPlayer, { useActiveTrack } from 'react-native-track-player'
 export const useTrackPlayerFavorite = () => {
 	const activeTrack = useActiveTrack()
 
-	const { favorites, toggleTrackFavorite } = useFavorites()
+	const { toggleTrackFavorite } = useFavorites()
+  const { favorites } = useAuth()
+  const { addTrackToFavorites, removeTrackFromFavorites } = useAuth()
 
-	const isFavorite = favorites.find((track) => track.url === activeTrack?.url)?.rating === 1
+  const isFavorite = activeTrack ? favorites.includes(activeTrack.url) : false;
 
 	// we're updating both the track player internal state and application internal state
 	const toggleFavorite = useCallback(async () => {
@@ -22,7 +25,11 @@ export const useTrackPlayerFavorite = () => {
 
 		// update the app internal state
 		if (activeTrack) {
-			toggleTrackFavorite(activeTrack)
+			if (!isFavorite) {
+        await addTrackToFavorites(activeTrack.url)
+      } else {
+        await removeTrackFromFavorites(activeTrack.url)
+      }
 		}
 	}, [isFavorite, toggleTrackFavorite, activeTrack])
 
